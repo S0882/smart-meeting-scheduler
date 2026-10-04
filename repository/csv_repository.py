@@ -4,6 +4,7 @@ from datetime import date
 from typing import List
 from models.event import Event
 from repository.base_repository import BaseRepository
+from exceptions import RepositoryError  # Import custom exception
 
 # Initialize the module-specific logger for tracking data layer operations
 logger = logging.getLogger(__name__)
@@ -60,9 +61,9 @@ class CSVRepository(BaseRepository):
             logger.info(f"Successfully loaded {len(events)} events from {self.file_path}.")
             return events
 
-        except FileNotFoundError:
+        except FileNotFoundError as e:
             logger.error(f"CSV file not found at path: {self.file_path}")
-            raise
+            raise RepositoryError(f"CSV file not found at path: {self.file_path}") from e
         except Exception as e:
             logger.error(f"Error reading or parsing CSV file {self.file_path}: {e}", exc_info=True)
-            raise
+            raise RepositoryError(f"Error reading or parsing CSV file {self.file_path}: {e}") from e

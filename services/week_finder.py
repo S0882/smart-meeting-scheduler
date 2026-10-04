@@ -33,16 +33,14 @@ class WeekFinder:
 
         for day_offset in range(5):
             current_date = start_of_week + timedelta(days=day_offset)
+            logger.debug(f"Processing date {current_date} for weekly search.")
 
-            # Filter events to include only those matching current_date (or events without a date constraint)
-            daily_events = [
-                e for e in events
-                if e.event_date is None or e.event_date == current_date
-            ]
-            logger.debug(f"Date {current_date}: Filtered {len(daily_events)} events for processing.")
-
-            # Calculate available slots specifically for current_date
-            free_slots = self.base_finder.find_available_slots(daily_events, target_people, duration_minutes)
+            # Calculate available slots specifically for current_date using base_finder
+            free_slots = self.base_finder.find_available_slots(
+                target_people=target_people,
+                duration_minutes=duration_minutes,
+                target_date=current_date
+            )
 
             day_schedule = DaySchedule(day_date=current_date, available_slots=free_slots)
             week_schedule.add_day(day_schedule)
